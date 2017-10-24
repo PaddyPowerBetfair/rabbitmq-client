@@ -1,4 +1,4 @@
-# RabbitMq-Client
+# RabbitMq-Client [![Build Status](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client.svg?branch=master)](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1af5197636824cf78ef5de598ca01e77)](https://www.codacy.com/app/rodoherty1/rabbitmq-client?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PaddyPowerBetfair/rabbitmq-client&amp;utm_campaign=Badge_Grade) [![Coverage Status](https://coveralls.io/repos/github/PaddyPowerBetfair/rabbitmq-client/badge.svg?branch=master)](https://coveralls.io/github/PaddyPowerBetfair/rabbitmq-client?branch=master)
 
 This library, written in Scala, is an Akka actor-based wrapper for the standard java RabbitMQ API.Akka actor-based rabbitq client library.
 
@@ -44,5 +44,12 @@ class MyPublishingActor extends Actor {
 }
 ```        
 
-# How to consume
+## How to consume
 Coming soon!
+
+## How can I contribute?
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## What licence is this released under?
+This is released under a modified version of the BSD licence.
+Please see [LICENCE.md](https://github.com/PaddyPowerBetfair/standards/blob/master/LICENCE.md).
