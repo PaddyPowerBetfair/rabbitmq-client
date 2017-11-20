@@ -1,8 +1,17 @@
 language: scala
 scala:
-    - 2.12.2
+- 2.12.3
+matrix:
+  include:
+  - jdk: oraclejdk8
+    scala: 2.12.3
+    env: COMMAND=ci-all PUBLISH=true
 script:
-    - sbt clean coverage test
-    - sbt coverageReport
+- sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND
+- sbt coverageReport
 after_success:
-    - sbt coveralls
+- sbt coveralls
+- ./project/publish
+env:
+  global:
+    secure: pCCvtKawsqJnE8lZkeZM5pbpsWI+3kFKdaHwtSMJQLWj0zPUbsJtsaarECiVaBmAUiv3QjColDOBJQM0jDKeP5IJqAaS5e9tPttsmIhbuHJjzznVYINmz4WA6Wx0+CgnAfyiAusEco/TFIH8KBPJmmN/2g9lzA+/dO47Xx4cYA6LQUbFzpJ8PASRZMpwyrcJj9YSO0/I2ng2/KqWcg9gAsE+MyvoTtUEBpK7P1joxB47n2nB7jxWIKp9CnJlBKXZ1TRvXmIkcUcHxSjZ988SZYfY07JVGZd6wedADLaLryfzHc7rLN6JJI1z8z1GeG884zZs4iM4reBiCQioXntt3wODM6/QegpWBuka9UOK6Vu1xVp/cITiXvT8lqlfEltgYpJ28gvFiBzsq1wVO4JzbDIqqPi2Ln3hktNYWOpNpYXXNvclnNLFrRC161+D0g+qzNwj3EdnwIFHHeE2eNFpYQ9nCF1ROVVS9BhmcufkrDtrsRv7Od3ku+jaSvWervSfebZJiVWBVdWUlSMzeWrlcj1nOXfxGbCqFkyYfy3B+Fv0LQ9exNe8spAWknSKS9yNTaG3vIQ0XVdj4PBWlr/kxHmt4opjn3w7v6ji3h+QnnT0ap+2n9OZHBxEe4f5wtEMWSWZviIGYuO4ELtE+zuKeMNiw1sXP/0dB8usDS7f+c0=
