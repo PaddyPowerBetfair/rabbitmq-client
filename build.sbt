@@ -1,3 +1,5 @@
+import com.typesafe.sbt.GitVersioning
+
 name := "RabbitMq Client"
 
 version := "0.1"
