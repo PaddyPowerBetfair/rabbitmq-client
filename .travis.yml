@@ -1,8 +1,14 @@
 language: scala
 scala:
-    - 2.12.2
+- 2.12.3
+matrix:
+  include:
+  - jdk: oraclejdk8
+    scala: 2.12.3
+    env: COMMAND=ci-all PUBLISH=true
 script:
-    - sbt clean coverage test
-    - sbt coverageReport
+- sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND
+- sbt coverageReport
 after_success:
-    - sbt coveralls
+- sbt coveralls
+- ./project/publish

@@ -1,3 +1,5 @@
+import com.typesafe.sbt.GitVersioning
+
 name := "RabbitMq Client"
 
 version := "0.1"
@@ -17,6 +19,8 @@ val akkaV = "2.5.6"
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
+addCommandAlias("ci-all",  ";+clean ;+compile ;+test ;+package")
+addCommandAlias("release", ";+publishSigned ;sonatypeReleaseAll")
 
 val akka = Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaV,
@@ -60,3 +64,68 @@ val mockito = Seq (
 
 libraryDependencies ++= akka ++ logging ++ scalacheck ++ scalatest ++ amqpClient ++ scalaz ++ argonaut ++ typesafeConfig ++ mockito
 
+
+
+// For distribution to sonartype
+
+useGpg := false
+usePgpKeyHex("B76CCB046AAA0BF2")
+pgpPublicRing := baseDirectory.value / "project" / ".gnupg" / "pubring.gpg"
+pgpSecretRing := baseDirectory.value / "project" / ".gnupg" / "secring.gpg"
+pgpPassphrase := sys.env.get("PGP_PASS").map(_.toArray)
+
+sonatypeProfileName := organization.value
+
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "oss.sonatype.org",
+  sys.env.getOrElse("SONATYPE_USER", ""),
+  sys.env.getOrElse("SONATYPE_PASS", "")
+)
+
+isSnapshot := version.value endsWith "SNAPSHOT"
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+licenses := Seq("PPB" -> url("https://github.com/PaddyPowerBetfair/Standards/blob/master/LICENCE.md"))
+homepage := Some(url("https://github.com/PaddyPowerBetfair/rabbitmq-client"))
+
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/PaddyPowerBetfair/rabbitmq-client"),
+    "scm:git@github.com:PaddyPowerBetfair/rabbitmq-client.git"
+  ))
+
+developers := List(
+  Developer(
+    id="rodoherty1",
+    name="PaddyPowerBetfair",
+    email="opensource@paddypowerbetfair.com",
+    url=url("https://www.paddypowerbetfair.com")
+  ))
+
+enablePlugins(GitVersioning)
+
+/* The BaseVersion setting represents the in-development (upcoming) version,
+ * as an alternative to SNAPSHOTS.
+ */
+git.baseVersion := "3.0.0"
+
+val ReleaseTag = """^v([\d\.]+)$""".r
+git.gitTagToVersionNumber := {
+  case ReleaseTag(v) => Some(v)
+  case _ => None
+}
+
+git.formattedShaVersion := {
+  val suffix = git.makeUncommittedSignifierSuffix(git.gitUncommittedChanges.value, git.uncommittedSignifier.value)
+
+  git.gitHeadCommit.value map { _.substring(0, 7) } map { sha =>
+    git.baseVersion.value + "-" + sha + suffix
+  }
+}
