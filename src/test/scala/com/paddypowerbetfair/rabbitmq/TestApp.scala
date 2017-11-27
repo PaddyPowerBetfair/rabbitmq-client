@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import akka.actor.{Actor, ActorSystem, Props, actorRef2Scala}
 import akka.pattern.ask

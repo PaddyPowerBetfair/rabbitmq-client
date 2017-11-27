@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import java.util.UUID
 import java.util.concurrent.{ExecutorService, Executors}

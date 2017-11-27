@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import java.io.IOException
 import java.util.HashMap

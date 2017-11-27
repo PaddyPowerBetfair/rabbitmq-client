@@ -2,7 +2,7 @@ import com.typesafe.sbt.GitVersioning
 
 name := "RabbitMq Client"
 
-version := "0.1"
+version := "0.2"
 
 scalaVersion := "2.12.2"
 
@@ -104,7 +104,7 @@ scmInfo := Some(
 developers := List(
   Developer(
     id="rodoherty1",
-    name="PaddyPowerBetfair",
+    name="Paddy Power Betfair",
     email="opensource@paddypowerbetfair.com",
     url=url("https://www.paddypowerbetfair.com")
   ))
