@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 sealed trait Declaration
 case class ExchangeDeclare(exchange: String, exchangeType: String, durable: Boolean, autoDelete: Boolean, arguments: Map[String, Object] = Map.empty)

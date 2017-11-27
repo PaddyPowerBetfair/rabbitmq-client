@@ -104,7 +104,7 @@ scmInfo := Some(
 developers := List(
   Developer(
     id="rodoherty1",
-    name="PaddyPowerBetfair",
+    name="Paddy Power Betfair",
     email="opensource@paddypowerbetfair.com",
     url=url("https://www.paddypowerbetfair.com")
   ))
