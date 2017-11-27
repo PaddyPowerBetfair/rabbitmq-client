@@ -80,6 +80,7 @@ class ConsumerForwarderActor(protected val connection: Connection, protected val
     extends ChannelActor(connection) with DeclarationAdapter {
   this: DeliveryHandler =>
   import scala.collection.JavaConverters._
+  import ConsumerForwarderActor._
 
   override def preStart(): Unit = {
     super.preStart()
