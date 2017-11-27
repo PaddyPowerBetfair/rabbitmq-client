@@ -1,9 +1,8 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import akka.actor.Actor._
 import akka.actor.SupervisorStrategy._
 import akka.actor._
-import com.ppb.rabbitmq.ConsumerForwarderActor._
 import com.rabbitmq.client._
 
 import scala.concurrent.duration._
@@ -81,6 +80,7 @@ class ConsumerForwarderActor(protected val connection: Connection, protected val
     extends ChannelActor(connection) with DeclarationAdapter {
   this: DeliveryHandler =>
   import scala.collection.JavaConverters._
+  import ConsumerForwarderActor._
 
   override def preStart(): Unit = {
     super.preStart()

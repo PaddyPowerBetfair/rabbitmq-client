@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import akka.actor.{Actor, ActorLogging}
 import com.rabbitmq.client.Connection
