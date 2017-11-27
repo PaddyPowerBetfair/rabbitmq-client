@@ -1,12 +1,12 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import akka.actor.Actor._
 import akka.actor.SupervisorStrategy._
 import akka.actor._
-import com.ppb.rabbitmq.ConsumerForwarderActor._
 import com.rabbitmq.client._
-
+import ConsumerForwarderActor._
 import scala.concurrent.duration._
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Try}
 
 //Consumer outgoing messages
@@ -80,7 +80,6 @@ object ConsumerForwarderActor {
 class ConsumerForwarderActor(protected val connection: Connection, protected val registration: RegisterConsumer)
     extends ChannelActor(connection) with DeclarationAdapter {
   this: DeliveryHandler =>
-  import scala.collection.JavaConverters._
 
   override def preStart(): Unit = {
     super.preStart()

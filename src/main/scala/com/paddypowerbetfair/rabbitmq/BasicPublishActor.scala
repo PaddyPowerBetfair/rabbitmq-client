@@ -1,4 +1,4 @@
-package com.ppb.rabbitmq
+package com.paddypowerbetfair.rabbitmq
 
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.AMQP
