@@ -6,6 +6,8 @@ import akka.actor._
 import com.rabbitmq.client._
 import scala.concurrent.duration._
 import scala.util.{Failure, Try}
+import scala.collection.JavaConverters._
+import ConsumerForwarderActor._
 
 //Consumer outgoing messages
 case class Delivery(tag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte])
@@ -78,9 +80,6 @@ object ConsumerForwarderActor {
 class ConsumerForwarderActor(protected val connection: Connection, protected val registration: RegisterConsumer)
     extends ChannelActor(connection) with DeclarationAdapter {
   this: DeliveryHandler =>
-
-  import scala.collection.JavaConverters._
-  import ConsumerForwarderActor._
 
   override def preStart(): Unit = {
     super.preStart()

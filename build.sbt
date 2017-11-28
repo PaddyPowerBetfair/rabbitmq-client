@@ -1,8 +1,10 @@
 import com.typesafe.sbt.GitVersioning
 
-name := "RabbitMq Client"
+organization := "com.paddypowerbetfair"
 
-version := "0.3"
+name := "rabbitmq-client"
+
+version := "0.3.33"
 
 scalaVersion := "2.12.2"
 
@@ -67,7 +69,7 @@ libraryDependencies ++= akka ++ logging ++ scalacheck ++ scalatest ++ amqpClient
 // For distribution to sonartype
 
 useGpg := false
-usePgpKeyHex("B76CCB046AAA0BF2")
+usePgpKeyHex("4BEF11849D8638711107EB75B76CCB046AAA0BF2")
 pgpPublicRing := baseDirectory.value / "project" / ".gnupg" / "pubring.gpg"
 pgpSecretRing := baseDirectory.value / "project" / ".gnupg" / "secring.gpg"
 pgpPassphrase := sys.env.get("PGP_PASS").map(_.toArray)
