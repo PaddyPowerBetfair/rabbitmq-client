@@ -1,8 +1,10 @@
 import com.typesafe.sbt.GitVersioning
 
-name := "RabbitMq Client"
+organization := "com.paddypowerbetfair"
 
-version := "0.2"
+name := "rabbitmq-client"
+
+version := "0.3.33"
 
 scalaVersion := "2.12.2"
 
@@ -64,17 +66,13 @@ val mockito = Seq (
 
 libraryDependencies ++= akka ++ logging ++ scalacheck ++ scalatest ++ amqpClient ++ scalaz ++ argonaut ++ typesafeConfig ++ mockito
 
-
-
 // For distribution to sonartype
 
 useGpg := false
-usePgpKeyHex("B76CCB046AAA0BF2")
+usePgpKeyHex("4BEF11849D8638711107EB75B76CCB046AAA0BF2")
 pgpPublicRing := baseDirectory.value / "project" / ".gnupg" / "pubring.gpg"
 pgpSecretRing := baseDirectory.value / "project" / ".gnupg" / "secring.gpg"
 pgpPassphrase := sys.env.get("PGP_PASS").map(_.toArray)
-
-sonatypeProfileName := organization.value
 
 credentials += Credentials(
   "Sonatype Nexus Repository Manager",
@@ -91,23 +89,6 @@ publishTo := Some(
   else
     Opts.resolver.sonatypeStaging
 )
-
-licenses := Seq("PPB" -> url("https://github.com/PaddyPowerBetfair/Standards/blob/master/LICENCE.md"))
-homepage := Some(url("https://github.com/PaddyPowerBetfair/rabbitmq-client"))
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/PaddyPowerBetfair/rabbitmq-client"),
-    "scm:git@github.com:PaddyPowerBetfair/rabbitmq-client.git"
-  ))
-
-developers := List(
-  Developer(
-    id="rodoherty1",
-    name="Paddy Power Betfair",
-    email="opensource@paddypowerbetfair.com",
-    url=url("https://www.paddypowerbetfair.com")
-  ))
 
 enablePlugins(GitVersioning)
 

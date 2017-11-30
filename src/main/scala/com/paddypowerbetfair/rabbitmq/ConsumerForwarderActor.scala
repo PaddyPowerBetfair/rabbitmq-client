@@ -4,10 +4,10 @@ import akka.actor.Actor._
 import akka.actor.SupervisorStrategy._
 import akka.actor._
 import com.rabbitmq.client._
-import ConsumerForwarderActor._
 import scala.concurrent.duration._
-import scala.collection.JavaConverters._
 import scala.util.{Failure, Try}
+import scala.collection.JavaConverters._
+import ConsumerForwarderActor._
 
 //Consumer outgoing messages
 case class Delivery(tag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte])
