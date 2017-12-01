@@ -5,8 +5,11 @@ scala:
 - 2.10.6
 matrix:
   include:
-  - jdk: oraclejdk8
-    scala: 2.12.3
+  - scala: 2.12.3
+    env: COMMAND=ci-all PUBLISH=true
+  - scala: 2.11.11
+    env: COMMAND=ci-all PUBLISH=true
+  - scala: 2.10.6
     env: COMMAND=ci-all PUBLISH=true
 script:
 - sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND
