@@ -3,7 +3,7 @@ import sbt.url
 sonatypeProfileName := "com.paddypowerbetfair"
 
 // To sync with Maven central, you need to supply the following information:
-publishMavenStyle := false
+publishMavenStyle := true 
 
 licenses := Seq("PPB" -> url("https://github.com/PaddyPowerBetfair/Standards/blob/master/LICENCE.md"))
 homepage := Some(url("https://github.com/PaddyPowerBetfair/rabbitmq-client"))
