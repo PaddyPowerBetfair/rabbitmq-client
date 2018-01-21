@@ -1,19 +1,18 @@
+after_success:
+  - "sbt coveralls"
+  - ./project/publish
 language: scala
-scala:
-- 2.12.3
-- 2.11.11
-- 2.10.6
 matrix:
   include:
-  - scala: 2.12.3
-    env: COMMAND=ci-all PUBLISH=true
-  - scala: 2.11.11
-    env: COMMAND=ci-all PUBLISH=true
-  - scala: 2.10.6
-    env: COMMAND=ci-all PUBLISH=true
+    -
+      env: "COMMAND=ci-all PUBLISH=true"
+      scala: "2.12.4"
+    -
+      env: "COMMAND=ci-all PUBLISH=true"
+      scala: "2.11.12"
+scala:
+  - "2.12.4"
+  - "2.11.12"
 script:
-- sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND
-- sbt coverageReport
-after_success:
-- sbt coveralls
-- ./project/publish
+  - "sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND"
+  - "sbt coverageReport"

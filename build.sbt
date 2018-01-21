@@ -6,18 +6,20 @@ name := "rabbitmq-client"
 
 version := "1.0.1-SNAPSHOT"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
+
+crossScalaVersions := Seq(scalaVersion.value, "2.11.12")
 
 val scalazV = "7.1.11"
 val scalazStreamV = "0.8.6"
 val argonautV = "6.2"
-val typesafeConfigV = "1.3.0"
+val typesafeConfigV = "1.3.2"
 val jodatimeV = "2.9.4"
 val amqpClientV = "3.5.3"
 val scalacheckV = "1.13.5"
 val scalatestV = "3.0.4"
 val mockitoV = "2.10.0"
-val akkaV = "2.5.6"
+val akkaV = "2.5.9"
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
@@ -55,8 +57,8 @@ val amqpClient = Seq(
 )
 
 val logging = Seq (
-  "org.slf4j" % "slf4j-api" % "1.7.12",
-  "ch.qos.logback" % "logback-classic" % "1.1.3"
+  "org.slf4j" % "slf4j-api" % "1.7.25",
+  "ch.qos.logback" % "logback-classic" % "1.2.3"
 )
 
 val mockito = Seq (
@@ -66,7 +68,7 @@ val mockito = Seq (
 
 libraryDependencies ++= akka ++ logging ++ scalacheck ++ scalatest ++ amqpClient ++ scalaz ++ argonaut ++ typesafeConfig ++ mockito
 
-// For distribution to sonartype
+// For distribution to sonatype
 
 useGpg := false
 usePgpKeyHex("4BEF11849D8638711107EB75B76CCB046AAA0BF2")
