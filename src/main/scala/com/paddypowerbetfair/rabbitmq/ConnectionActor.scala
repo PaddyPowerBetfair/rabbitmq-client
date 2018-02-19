@@ -35,7 +35,7 @@ class ConnectionActor(connectionFactory: ConnectionFactory, executor: ExecutorSe
         log.warning("Shutting down by application request")
         self ! PoisonPill
       } else {
-        log.warning(s"RabbitMq connection shutdown due to ${cause.getReason}")
+        log.warning(s"RabbitMq connection shutdown due to ${cause.getMessage} ${cause.getStackTrace.mkString(", ")}")
         throw cause
       }
   }

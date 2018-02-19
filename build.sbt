@@ -4,9 +4,9 @@ organization := "com.paddypowerbetfair"
 
 name := "rabbitmq-client"
 
-version := "1.0.0"
+version := "1.0.1"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.4"
 
 val scalazV = "7.1.11"
 val scalazStreamV = "0.8.6"
