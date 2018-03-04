@@ -1,19 +1,17 @@
 # RabbitMq-Client [![Build Status](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client.svg?branch=master)](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1af5197636824cf78ef5de598ca01e77)](https://www.codacy.com/app/rodoherty1/rabbitmq-client?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PaddyPowerBetfair/rabbitmq-client&amp;utm_campaign=Badge_Grade) [![Coverage Status](https://coveralls.io/repos/github/PaddyPowerBetfair/rabbitmq-client/badge.svg?branch=master)](https://coveralls.io/github/PaddyPowerBetfair/rabbitmq-client?branch=master)
 
-This library, written in Scala, is an Akka actor-based wrapper for the standard java RabbitMQ API.Akka actor-based rabbitq client library.
+`rabbitmq-client` is a n Akka actor-based wrapper for the standard java RabbitMQ API.
 
-There are two main use-cases; publish and consume.
+There are two basic use-cases; publish and consume.
 
 ## How to publish
-    
-Set up the pre-requisite objects in a class which will eventually request something to be published to a RabbitMq Exchange 
-    
+
 ```scala
 object MyApp extends App {
   val addresses: List[com.rabbitmq.client.Address] = ???
-    
-  // Use constructor or setters to apply connection details of your rabbit broker. 
-  val connectionFactory = new com.rabbitmq.client.ConnectionFactory() 
+
+  // Use constructor or setters to apply connection details of your rabbit broker.
+  val connectionFactory = new com.rabbitmq.client.ConnectionFactory()
 
   val rabbitActor = actorSystem.actorOf(Props(classOf[RabbitMqActor], connectionFactory, addresses), "my-rabbitmq-actor")
 
@@ -23,29 +21,56 @@ object MyApp extends App {
 }
 ```
 
-```myPublishingActor``` will now receive a ```PublisherChannelActor``` which contains the ```ActorRef``` that must be used by ```myPublishingActor``` when it wants to publish to RabbitMq. 
+```myPublishingActor``` will now receive a ```PublisherChannelActor``` which contains the ```ActorRef``` that must be used by ```myPublishingActor``` when it wants to publish to RabbitMq.
 
 ```scala
 class MyPublishingActor extends Actor {
   def receive: Receive = {
-    case PublisherChannelActor(rabbitPublisher) => ??? // Make a note of this actorRef
+    case PublisherChannelActor(rabbitPublisher) => context.become(readyToPublish(rabbitPublisher))
   }
 
-...
-
-  // Now you may publish to your RabbitMq Broker as follows:
-  rabbitPublisher !
+  def readyToPublish(rabbitPublisher: ActorRef): Receive = {
+    case myJsonMessage: String =>
+      rabbitPublisher !
     BasicPublish(
       "exchangeName",
       "routingKey",
       myBasicProperties, // reference to BasicProperties which defines AMQP Headers
       myJsonMessage.getBytes("UTF-8")
     )
+  }
 }
-```        
+```
 
 ## How to consume
-Coming soon!
+
+Below is a very basic sketch of an application that will consume from a RabbitMq Queue.
+
+```scala
+object BasicSampleApp extends App {
+  val connectionFactory = new com.rabbitmq.client.ConnectionFactory()
+
+  val rabbitActor: ActorRef = system.actorOf(Props(new RabbitMqActor(connectionFactory, addresses)), "rabbitActor")
+
+  val myConsumingActor: ActorRef = system.actorOf(Props(new MyConsumingActor()))
+
+  val headers = Map.empty[String, AnyRef]
+  val noRoutingKey = ""
+
+  val mqPropertiesBuilder: BasicProperties.Builder = new BasicProperties.Builder().contentType("application/json")
+
+  rabbitActor ! RegisterConsumer("myQueue", myConsumingActor, List.empty[Declaration])
+
+}
+
+class MyConsumingActor extends Actor {
+  override def receive: Receive = {
+    case d: Delivery =>
+      log.info(s"Message successfully consumed - ${d.body.map(_.toChar).mkString}")
+      sender() ! Ack
+  }
+}
+```
 
 ## How can I contribute?
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
