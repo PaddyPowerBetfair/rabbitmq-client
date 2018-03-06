@@ -1,10 +1,10 @@
 language: scala
 scala:
-- 2.12.3
+- 2.12.4
 matrix:
   include:
   - jdk: oraclejdk8
-    scala: 2.12.3
+    scala: 2.12.4
     env: COMMAND=ci-all PUBLISH=true
 script:
 - sbt -J-Xmx6144m ++$TRAVIS_SCALA_VERSION $COMMAND
