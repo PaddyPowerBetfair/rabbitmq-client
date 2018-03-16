@@ -1,6 +1,6 @@
 # RabbitMq-Client [![Build Status](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client.svg?branch=master)](https://travis-ci.org/PaddyPowerBetfair/rabbitmq-client) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1af5197636824cf78ef5de598ca01e77)](https://www.codacy.com/app/rodoherty1/rabbitmq-client?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PaddyPowerBetfair/rabbitmq-client&amp;utm_campaign=Badge_Grade) [![Coverage Status](https://coveralls.io/repos/github/PaddyPowerBetfair/rabbitmq-client/badge.svg?branch=master)](https://coveralls.io/github/PaddyPowerBetfair/rabbitmq-client?branch=master)
 
-`rabbitmq-client` is a n Akka actor-based wrapper for the standard java RabbitMQ API.
+`rabbitmq-client` is an Akka actor-based wrapper for the standard java RabbitMQ API.
 
 There are two basic use-cases; publish and consume.
 
@@ -48,19 +48,14 @@ Below is a very basic sketch of an application that will consume from a RabbitMq
 
 ```scala
 object BasicSampleApp extends App {
+  val addresses: List[com.rabbitmq.client.Address] = ???
   val connectionFactory = new com.rabbitmq.client.ConnectionFactory()
 
   val rabbitActor: ActorRef = system.actorOf(Props(new RabbitMqActor(connectionFactory, addresses)), "rabbitActor")
 
   val myConsumingActor: ActorRef = system.actorOf(Props(new MyConsumingActor()))
 
-  val headers = Map.empty[String, AnyRef]
-  val noRoutingKey = ""
-
-  val mqPropertiesBuilder: BasicProperties.Builder = new BasicProperties.Builder().contentType("application/json")
-
   rabbitActor ! RegisterConsumer("myQueue", myConsumingActor, List.empty[Declaration])
-
 }
 
 class MyConsumingActor extends Actor {

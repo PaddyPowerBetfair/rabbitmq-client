@@ -5,7 +5,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, Stash}
 import com.paddypowerbetfair.rabbitmq.{BasicPublish, PublisherChannelActor}
 
 object MyPublishingActor {
-
   def props: Props = Props(new MyPublishingActor())
 }
 
