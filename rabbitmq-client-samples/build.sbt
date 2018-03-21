@@ -16,10 +16,7 @@ resolvers += "Sonatype OSS Releases" at "https://oss.sonatype.org/content/reposi
 val akka = Seq (
   "com.typesafe.akka" %% "akka-actor" % akkaV,
   "com.typesafe.akka" %% "akka-stream-testkit" % akkaV,
-  "com.typesafe.akka" %% "akka-testkit" % akkaV,
-  "com.typesafe.akka" %% "akka-http" % akkaHttpV,
-  "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
-  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV
+  "com.typesafe.akka" %% "akka-testkit" % akkaV
 )
 
 val typesafeConfig = Seq(
@@ -35,6 +32,5 @@ val rabbitMqClient = Seq (
   "com.paddypowerbetfair" %% "rabbitmq-client" % rabbitMqClientV
 )
  
-//libraryDependencies ++= akka ++ logging ++ scalacheck ++ scalatest ++ scalaz ++ typesafeConfig ++ rabbitMqClient
 libraryDependencies ++= akka ++ logging ++ typesafeConfig ++ rabbitMqClient
 

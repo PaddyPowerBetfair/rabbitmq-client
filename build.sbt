@@ -2,9 +2,11 @@ import com.typesafe.sbt.GitVersioning
 
 organization := "com.paddypowerbetfair"
 
-name := "rabbitmq-client"
+artifact := Artifact("rabbitmq-client")
 
-version := "1.0.2.1-SNAPSHOT"
+name := artifact.value.name
+
+version := "1.0.2.2-SNAPSHOT"
 
 scalaVersion := "2.12.4"
 

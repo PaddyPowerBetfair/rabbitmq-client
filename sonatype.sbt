@@ -6,12 +6,16 @@ sonatypeProfileName := "com.paddypowerbetfair"
 publishMavenStyle := true
 
 licenses := Seq("PPB" -> url("https://github.com/PaddyPowerBetfair/Standards/blob/master/LICENCE.md"))
+
 homepage := Some(url("https://github.com/PaddyPowerBetfair/rabbitmq-client"))
+
+description := "rabbitmq-client is an Akka actor-based wrapper for the standard java RabbitMQ API"
 
 scmInfo := Some(
   ScmInfo(
-    url("https://github.com/PaddyPowerBetfair/rabbitmq-client"),
-    "scm:git@github.com:PaddyPowerBetfair/rabbitmq-client.git"
+    browseUrl = url("https://github.com/PaddyPowerBetfair/rabbitmq-client"),
+    connection = "scm:git:ssh://github.com:PaddyPowerBetfair/rabbitmq-client.git",
+    devConnection = "scm:git:ssh://github.com:PaddyPowerBetfair/rabbitmq-client.git"
   ))
 
 developers := List(
@@ -21,23 +25,3 @@ developers := List(
     email="opensource@paddypowerbetfair.com",
     url=url("https://www.paddypowerbetfair.com")
   ))
-
-pomExtra := <url>https://www.paddypowerbetfair.com</url>
-  <licenses>
-    <license>
-      <name>PPB</name>
-      <url>https://github.com/PaddyPowerBetfair/Standards/blob/master/LICENCE.md</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <url>https://github.com/PaddyPowerBetfair/rabbitmq-client</url>
-    <connection>scm:git@github.com:PaddyPowerBetfair/rabbitmq-client.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>rodoherty1</id>
-      <name>Rob O'Doherty</name>
-      <url>https://github.com/PaddyPowerBetfair</url>
-    </developer>
-  </developers>
