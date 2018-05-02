@@ -8,6 +8,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._
 
+// scalastyle:off
 object TestApp extends App {
   val system = ActorSystem("test", ConfigFactory.load())
 
@@ -97,3 +98,4 @@ object TestConfirmProducer extends App {
   }
 
 }
+// scalastyle:on
