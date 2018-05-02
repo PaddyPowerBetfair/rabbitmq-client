@@ -16,22 +16,22 @@ import java.util.concurrent.ExecutorService
 import scala.util.Random
 import akka.actor.SupervisorStrategy._
 
-class ConnectionActor(connectionFactory: ConnectionFactory, executor: ExecutorService, addresses: List[Address]) extends Actor with ActorLogging {
+class ConnectionActor(connectionFactory: ConnectionFactory, executor: ExecutorService, addresses: Seq[Address]) extends Actor with ActorLogging {
 
-  val connection = connectionFactory.newConnection(executor, Random.shuffle(addresses).toArray)
+  private val connection = connectionFactory.newConnection(executor, Random.shuffle(addresses).toArray)
   connection.addShutdownListener(shutdownListener)
 
   def receive: Receive = {
     case consumersRegistration @ RegisterConsumer(queueName, _, _, _, _, _, _, _) =>
-      context.actorOf(ConsumerForwarderActor.props(connection, consumersRegistration), queueName + UUID.randomUUID().toString())
+      context.actorOf(ConsumerForwarderActor.props(connection, consumersRegistration), queueName + UUID.randomUUID().toString)
       log.debug("A consumer forwarder actor was created")
     case publisherRegistration @ RegisterPublisher(_, _, publisherConfirms, _) =>
       val publishActorClass = if (publisherConfirms) classOf[ConfirmPublishActor] else classOf[BasicPublishActor]
-      context.actorOf(Props(publishActorClass, connection, publisherRegistration), "publisher" + UUID.randomUUID().toString())
+      context.actorOf(Props(publishActorClass, connection, publisherRegistration), "publisher" + UUID.randomUUID().toString)
       log.debug("A publisher actor was created")
     case cause: ShutdownSignalException =>
       log.debug("connection actor shutdown signal")
-      if (cause.isInitiatedByApplication()) {
+      if (cause.isInitiatedByApplication) {
         log.warning("Shutting down by application request")
         self ! PoisonPill
       } else {
@@ -60,6 +60,7 @@ class ConnectionActor(connectionFactory: ConnectionFactory, executor: ExecutorSe
   }
 }
 
-
-
-
+object ConnectionActor {
+  def props(connectionFactory: ConnectionFactory, executor: ExecutorService, addresses: Seq[Address]): Props =
+    Props(new ConnectionActor(connectionFactory, executor, addresses))
+}

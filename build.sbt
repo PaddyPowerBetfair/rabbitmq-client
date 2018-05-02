@@ -8,11 +8,12 @@ version := "1.0.2-SNAPSHOT"
 
 scalaVersion := "2.12.4"
 
+scalacOptions ++= Seq("-deprecation", "-feature")
+
 val scalazV = "7.1.11"
 val scalazStreamV = "0.8.6"
 val argonautV = "6.2"
 val typesafeConfigV = "1.3.0"
-val jodatimeV = "2.9.4"
 val amqpClientV = "3.5.3"
 val scalacheckV = "1.13.5"
 val scalatestV = "3.0.4"

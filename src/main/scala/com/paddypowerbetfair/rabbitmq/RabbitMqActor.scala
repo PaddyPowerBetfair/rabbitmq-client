@@ -18,7 +18,7 @@ trait Registration {
 }
 
 case class RegisterConsumer(queueName: String, consumer: ActorRef, declarations: List[Declaration],
-    timeout: FiniteDuration = 5 seconds, ackStrategy: AckStrategy = new DefaultAckStrategy,
+    timeout: FiniteDuration = 5.seconds, ackStrategy: AckStrategy = new DefaultAckStrategy,
     basicConsumeOptions: BasicConsumeOptions = BasicConsumeOptions("", false, false, Map.empty),
     withAckActors: Boolean = true, connectionDeathWatch: Boolean = false) extends Registration {
   def registeredActor: ActorRef = consumer
@@ -40,10 +40,8 @@ case object RabbitMqConnectionDropped
 //Internal RabbitMqActor messages
 private[rabbitmq] case object Reconnect
 
-class RabbitMqActor(connectionFactory: ConnectionFactory, addresses: List[Address], retryDelay: FiniteDuration) extends Actor with ActorLogging {
+class RabbitMqActor(connectionFactory: ConnectionFactory, addresses: Seq[Address], retryDelay: FiniteDuration) extends Actor with ActorLogging {
   import context.dispatcher
-
-  def this(connectionFactory: ConnectionFactory, addresses: List[Address]) = this(connectionFactory, addresses, 5 second)
 
   var registrations = Queue[Registration]()
   var connectionActor = createConnectionActor()
@@ -92,4 +90,9 @@ class RabbitMqActor(connectionFactory: ConnectionFactory, addresses: List[Addres
   override def postStop(): Unit = {
     executor.shutdown()
   }
+}
+
+object RabbitMqActor {
+  def props(connectionFactory: ConnectionFactory, addresses: Seq[Address], retryDelay: FiniteDuration = 5.seconds) =
+    Props(new RabbitMqActor(connectionFactory, addresses, retryDelay))
 }

@@ -1,10 +1,6 @@
 package com.paddypowerbetfair.rabbitmq
 
-import akka.actor.Terminated
-import akka.actor.ActorLogging
-import akka.actor.Stash
-import akka.actor.Actor
-import akka.actor.ActorRef
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Stash, Terminated}
 
 /**
  * This is one possible implementation of a publisher that has the limitation of
@@ -41,9 +37,13 @@ class StashingPublisher extends Actor with ActorLogging with Stash {
       }
   }
 
-  private def switchChannel(channelActor: ActorRef) = {
+  private def switchChannel(channelActor: ActorRef): Unit = {
     log.info("Switching publisher to a new channel")
     context.watch(channelActor)
     context.become(connected(channelActor))
   }
+}
+
+object StashingPublisher {
+  def props: Props = Props(new StashingPublisher)
 }
