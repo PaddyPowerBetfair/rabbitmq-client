@@ -10,7 +10,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
 import org.scalatest.{BeforeAndAfterAll, DiagrammedAssertions, FlatSpecLike, Matchers}
-import org.scalatest.mock.MockitoSugar
 import com.rabbitmq.client.Address
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.ConfirmListener
@@ -19,22 +18,22 @@ import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.MessageProperties
 import com.rabbitmq.client.ShutdownListener
 import com.rabbitmq.client.ShutdownSignalException
-import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.PoisonPill
 import akka.actor.Props
 import akka.actor.actorRef2Scala
 import akka.testkit.ImplicitSender
-import akka.testkit.TestActor
 import akka.testkit.TestActorRef
 import akka.testkit.TestKit
 import akka.testkit.TestProbe
 import org.scalatest.concurrent.Eventually
+import org.scalatest.mockito.MockitoSugar
 
-class PublisherSpec extends TestKit(ActorSystem("testsystem", RabbitMqActorSpec.config))
+class PublisherSpec extends TestKit(ActorSystem("testsystem"))
     with ImplicitSender
     with FlatSpecLike
     with Matchers
+    with Eventually
     with BeforeAndAfterAll
     with DiagrammedAssertions {
 
@@ -44,22 +43,14 @@ class PublisherSpec extends TestKit(ActorSystem("testsystem", RabbitMqActorSpec.
     val conn = mock[Connection]
     val ch = mock[Channel]
 
-    val props = Props(classOf[RabbitMqActor], cf, List(new Address("host1")), 2 seconds)
-
-    def autoPilot(ack: Any) = new TestActor.AutoPilot {
-      def run(sender: ActorRef, msg: Any): TestActor.AutoPilot = {
-        sender ! ack;
-        TestActor.KeepRunning
-      }
-    }
     val publisherProbe = TestProbe()
 
     val data = "this is a test".getBytes
     val msg = BasicPublish("testExchange", "testRoutingKey", MessageProperties.BASIC, data)
     when(cf.newConnection(any[ExecutorService](), any[Array[Address]])).thenReturn(conn)
     when(conn.createChannel()).thenReturn(ch)
-    val rabbitMq = system.actorOf(props)
-    rabbitMq ! RegisterPublisher(publisherProbe.ref, List(ExchangeDeclare("test1", "fanout", true, false)), confirm)
+    val rabbitMq = system.actorOf(RabbitMqActor.props(cf, List(new Address("host1")), 2.seconds))
+    rabbitMq ! RegisterPublisher(publisherProbe.ref, List(ExchangeDeclare("test1", "fanout", durable = true, autoDelete = false)), confirm)
     expectMsg(RegisterOk)
     val PublisherChannelActor(channelActorRef) = publisherProbe.expectMsgClass(classOf[PublisherChannelActor])
   }
@@ -70,7 +61,7 @@ class PublisherSpec extends TestKit(ActorSystem("testsystem", RabbitMqActorSpec.
 
   it should "send a new channel actor on reconnection" in new WithPublisherFixture {
     val shutdownListenerCaptor = ArgumentCaptor.forClass[ShutdownListener, ShutdownListener](classOf[ShutdownListener])
-    Eventually.eventually {
+    eventually {
       verify(conn).addShutdownListener(shutdownListenerCaptor.capture())
     }
     shutdownListenerCaptor.getValue.shutdownCompleted(new ShutdownSignalException(false, false, null, null))
@@ -91,38 +82,38 @@ class PublisherSpec extends TestKit(ActorSystem("testsystem", RabbitMqActorSpec.
     publisherProbe.expectMsgClass(classOf[PublisherChannelActor])
   }
 
-  "The confirm publisher actor" should "ack messages with a confirm listener" ignore new WithPublisherFixture(true) {
-    Eventually.eventually {
+  "The confirm publisher actor" should "ack messages with a confirm listener" in new WithPublisherFixture(true) {
+    val confirmListenerCaptor: ArgumentCaptor[ConfirmListener] = ArgumentCaptor.forClass[ConfirmListener, ConfirmListener](classOf[ConfirmListener])
+    eventually {
       verify(ch).exchangeDeclare("test1", "fanout", true, false, new HashMap())
       verify(ch).confirmSelect()
+      verify(ch).addConfirmListener(confirmListenerCaptor.capture())
     }
-    val confirmListenerCaptor: ArgumentCaptor[ConfirmListener] = ArgumentCaptor.forClass[ConfirmListener, ConfirmListener](classOf[ConfirmListener])
-    verify(ch).addConfirmListener(confirmListenerCaptor.capture())
-    when(ch.getNextPublishSeqNo()).thenReturn(1l, 2l, 3l)
+    when(ch.getNextPublishSeqNo).thenReturn(1l, 2l, 3l)
 
     val publishers = (1 to 3) map { _ => TestProbe() }
     for (pub <- publishers) channelActorRef.tell(msg, pub.ref)
-    confirmListenerCaptor.getValue().handleAck(2, true)
+    confirmListenerCaptor.getValue.handleAck(2, true)
     publishers(0).expectMsg(Ack)
     publishers(1).expectMsg(Ack)
-    confirmListenerCaptor.getValue().handleAck(3, false)
+    confirmListenerCaptor.getValue.handleAck(3, false)
     publishers(2).expectMsg(Ack)
   }
 
-  it should "nack messages with a confirm listener" ignore new WithPublisherFixture(true) {
-    Eventually.eventually {
-      verify(ch).confirmSelect()
-    }
+  it should "nack messages with a confirm listener" in new WithPublisherFixture(true) {
     val confirmListenerCaptor = ArgumentCaptor.forClass[ConfirmListener, ConfirmListener](classOf[ConfirmListener])
-    verify(ch).addConfirmListener(confirmListenerCaptor.capture())
-    when(ch.getNextPublishSeqNo()).thenReturn(1l, 2l, 3l)
+    eventually {
+      verify(ch).confirmSelect()
+      verify(ch).addConfirmListener(confirmListenerCaptor.capture())
+    }
+    when(ch.getNextPublishSeqNo).thenReturn(1l, 2l, 3l)
 
     val publishers = (1 to 3) map { _ => TestProbe() }
     for (pub <- publishers) channelActorRef.tell(msg, pub.ref)
-    confirmListenerCaptor.getValue().handleNack(2, true)
+    confirmListenerCaptor.getValue.handleNack(2, true)
     publishers(0).expectMsg(Nack)
     publishers(1).expectMsg(Nack)
-    confirmListenerCaptor.getValue().handleNack(3, false)
+    confirmListenerCaptor.getValue.handleNack(3, false)
     publishers(2).expectMsg(Nack)
   }
 

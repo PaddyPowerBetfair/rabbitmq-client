@@ -95,7 +95,7 @@ class ConsumerForwarderActor(protected val connection: Connection, protected val
     case RetryRegistration =>
       log.warning(s"Consumer for ${registration.queueName} failed to register after $MaxFailedRegistrationAttempts attempts")
       throw ConsumerRegistrationException
-    case e:ShutdownSignalException if e.isHardError == false =>
+    case e:ShutdownSignalException if !e.isHardError =>
       throw ConsumerRegistrationException
     case e: Exception =>
       log.warning(s"Consumer for ${registration.queueName} shutdown, with error ${e.getMessage}")
@@ -151,7 +151,7 @@ class ConsumerForwarderActor(protected val connection: Connection, protected val
       case Failure(e) =>
         log.warning(s"Failed to connect to ${registration.queueName}, retry attempt $attempt of $MaxFailedRegistrationAttempts with error ${e.getMessage}")
         context.system.scheduler.scheduleOnce(attempt.second, self, RetryRegistration(attempt + 1))(context.dispatcher)
-      case _ => log.warning(s"Consumer registered successfully at ${attempt} attempt")
+      case _ => log.warning(s"Consumer registered successfully at $attempt attempt")
     }
   }
 

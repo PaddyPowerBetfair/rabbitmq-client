@@ -8,28 +8,23 @@ import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import akka.testkit.{ImplicitSender, TestActor, TestActorRef, TestKit, TestProbe}
 import akka.util.Timeout
 import com.rabbitmq.client._
-import com.typesafe.config.ConfigFactory
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{eq => mockitoEq, _}
 import org.mockito.Mockito._
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
-object RabbitMqActorSpec {
-  val config = ConfigFactory.parseString("""akka {  stdout-loglevel = "OFF",  loglevel = "OFF" }""")
-}
-
-abstract class RabbitMqActorSpec(ackActorPerMessage: Boolean) extends TestKit(ActorSystem("testsystem", RabbitMqActorSpec.config))
+abstract class RabbitMqActorSpec(ackActorPerMessage: Boolean) extends TestKit(ActorSystem("testsystem"))
     with ImplicitSender
     with FlatSpecLike
     with Matchers
     with BeforeAndAfterAll
     with DiagrammedAssertions {
 
-  implicit val timeout = Timeout(5000 seconds)
+  implicit val timeout: Timeout = 5000.seconds
 
   trait RabbitMqFixture extends MockitoSugar {
 
@@ -45,7 +40,7 @@ abstract class RabbitMqActorSpec(ackActorPerMessage: Boolean) extends TestKit(Ac
     val conn = mock[Connection]
     val ch = mock[Channel]
 
-    val props = Props(classOf[RabbitMqActor], cf, List(new Address("host1")), 10 millis)
+    val props = Props(classOf[RabbitMqActor], cf, List(new Address("host1")), 10.millis)
     val delivery = Delivery("tag", new Envelope(1L, false, "exchange", "routingKey"), new AMQP.BasicProperties.Builder().build(), "test".getBytes)
 
     val consumer = TestProbe()
@@ -63,7 +58,7 @@ abstract class RabbitMqActorSpec(ackActorPerMessage: Boolean) extends TestKit(Ac
     when(conn.createChannel()).thenReturn(ch)
     when(ch.isOpen).thenReturn(true)
     val rabbitMq: TestActorRef[RabbitMqActor] = TestActorRef(props)
-    val registrationTimeout = 50 milliseconds
+    val registrationTimeout = 50.milliseconds
 
     rabbitMq ! RegisterConsumer("test", consumer.ref, List(
       ExchangeDeclare("test1", "fanout", true, false),
@@ -97,21 +92,25 @@ abstract class RabbitMqActorSpec(ackActorPerMessage: Boolean) extends TestKit(Ac
 
   it should "NOT notify uninterested registered actors if the connection drops" in new MockitoSugar {
     val cf = mock[ConnectionFactory]
-    val rmq = TestActorRef(new RabbitMqActor(cf, Nil, 10 millis))
-    val reg = RegisterConsumer("test", self, List(), 50 millis,
+    when(cf.newConnection(any[ExecutorService](), any[Array[Address]])).thenReturn(mock[Connection])
+
+    val rmq = TestActorRef(new RabbitMqActor(cf, Nil, 10.millis))
+    val reg = RegisterConsumer("test", self, List(), 50.millis,
       withAckActors = ackActorPerMessage,
       ackStrategy = new DefaultAckStrategy)
     rmq.underlyingActor.registrations :+= reg
 
     rmq.underlyingActor.supervisorStrategy.decider.apply(new IOException("asd"))
 
-    expectNoMsg()
+    expectNoMessage(remainingOrDefault)
   }
 
   it should "notify interested registered actors if the connection drops" in new MockitoSugar {
     val cf = mock[ConnectionFactory]
-    val rmq = TestActorRef(new RabbitMqActor(cf, Nil, 10 millis))
-    val reg = RegisterConsumer("test", self, List(), 50 millis,
+    when(cf.newConnection(any[ExecutorService](), any[Array[Address]])).thenReturn(mock[Connection])
+
+    val rmq = TestActorRef(new RabbitMqActor(cf, Nil, 10.millis))
+    val reg = RegisterConsumer("test", self, List(), 50.millis,
       withAckActors = ackActorPerMessage,
       ackStrategy = new DefaultAckStrategy,
       connectionDeathWatch = true)
