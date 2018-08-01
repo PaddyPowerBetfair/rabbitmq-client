@@ -8,7 +8,7 @@ scalaVersion := "2.12.4"
 
 val typesafeConfigV = "1.3.0"
 val akkaV = "2.5.7"
-val rabbitMqClientV = "1.0.1-SNAPSHOT"
+val rabbitMqClientV = "1.0.3"
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/snapshots"

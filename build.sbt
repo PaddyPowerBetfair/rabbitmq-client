@@ -4,7 +4,7 @@ organization := "com.paddypowerbetfair"
 
 name := "rabbitmq-client"
 
-version := "1.0.2-SNAPSHOT"
+version := "1.0.3"
 
 scalaVersion := "2.12.4"
 
